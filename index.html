@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reactで作った数当てゲーム</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.2/css/bulma.min.css" />
+  <link href="./css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classnames/2.2.6/index.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+
+  const Point = () => {
+    const [number,changeNumber] = React.useState('?');
+    const [myPoint,myPointChange] = React.useState(0);
+    const [count,countDown] = React.useState(10);
+    const [reset,setReset] = React.useState('');
+
+    const selectNumber = (myNumber) => {
+
+      const randomNumber = Math.floor(Math.random()*3);
+      const suji = [1,2,3];
+      let naturalNumber = suji[randomNumber]; 
+
+      if(myNumber === naturalNumber && myNumber >= 1){
+        let plusPoint = myPoint + naturalNumber; 
+        myPointChange(plusPoint);
+      }else{
+        let minusPoint = myPoint - naturalNumber;
+        myPointChange(minusPoint);
+      };
+
+      changeNumber(naturalNumber);
+
+      countDown(count=>count-1);
+      if(count === 0){
+        onRestart();
+      };
+    };
+
+    const onRestart = () => {
+      changeNumber('?');
+      myPointChange(0);
+      countDown(10);
+    };
+
+    const Button = ({button,number}) => {
+      return(
+        <>
+          {
+            count === 0
+            ?
+            <button onClick={onRestart}>リセット</button>
+            :
+            <div>
+              <dl>
+                <dt className="random">{number}</dt>
+                <dd>
+                  <button onClick={()=>selectNumber(1)}>1</button>
+                  <button onClick={()=>selectNumber(2)}>2</button>
+                  <button onClick={()=>selectNumber(3)}>3</button>
+                </dd>
+              </dl>
+              <p>ボタンを押せるのはあと{count}回です</p>
+
+            </div>
+          }
+        </>
+      );
+    };
+
+    return(
+      <div className="wrap">
+        <h2>数当てゲーム</h2>
+        <p>選んだ数字とランダム数字が一致すると選んだ数字をポイントに加算。<br/>はずれると選んだ数字の分、ポイントが減ります。<br/></p>
+        <Button number={number} count={count}/>
+        <dl>
+          <dt>あなたのポイント</dt>
+          <dd className="point">{myPoint}</dd>
+        </dl>
+      </div>
+    );
+  };
+
+const root = document.getElementById('root');
+ReactDOM.render(<Point />, root);
+
+  </script>
+</body>
+</html>
